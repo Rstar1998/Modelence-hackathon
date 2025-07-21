@@ -77,7 +77,7 @@ export default new Module('questionGenerator', {
       const aiData = await aiResponse.json() as any;
       // Extract the text and parse it as JSON
       const responseText = aiData.candidates[0].content.parts[0].text;
-      console.log(responseText);
+     
       let jsonString = responseText;
         const match = responseText.match(/```json\s*([\s\S]*?)\s*```/);
 

@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { modelenceMutation } from '@modelence/react-query';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Loader, Clipboard, Wand2 } from 'lucide-react';
 
+// --- Sample Data Constants ---
 const sampleResume = `
 John Doe
 Data Analyst
@@ -42,7 +45,7 @@ Qualifications
 - Excellent communication and presentation skills.
 `;
 
-// Define a type for our generation result for better TypeScript support
+// --- Type Definition ---
 type GenerationResult = {
   _id: string;
   generatedQuestions: {
@@ -52,16 +55,32 @@ type GenerationResult = {
   }[];
 };
 
+// --- Animation Variants ---
+const containerVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 100 } },
+};
+
+
 export default function QuestionGeneratorPage() {
   const [resume, setResume] = useState('');
   const [jobDescription, setJobDescription] = useState('');
   const [result, setResult] = useState<GenerationResult | null>(null);
 
   const { mutate: generateQuestions, isPending, error } = useMutation({
-    // Use the mutation we defined in our backend module
     ...modelenceMutation('questionGenerator.generate'),
     onSuccess: (data) => {
-      // When the mutation is successful, store the result in our state
       setResult(data as GenerationResult);
     },
   });
@@ -71,76 +90,138 @@ export default function QuestionGeneratorPage() {
     if (!resume.trim() || !jobDescription.trim()) return;
     generateQuestions({ resume, jobDescription });
   };
-
+  
   const handlePasteSampleData = () => {
     setResume(sampleResume);
     setJobDescription(sampleJobDescription);
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-2">AI Interview Question Generator</h1>
-      <p className="text-gray-600 mb-6">Paste a resume and job description to generate tailored interview questions.</p>
+    <motion.div 
+      className="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8 font-sans"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
+      <header className="text-center mb-10">
+        <motion.h1 variants={itemVariants} className="text-4xl sm:text-5xl font-bold text-gray-800 mb-2">
+          AI Interview Question Generator
+        </motion.h1>
+        <motion.p variants={itemVariants} className="text-lg text-gray-500">
+          Generate tailored questions from a resume and job description.
+        </motion.p>
+      </header>
 
-      <form onSubmit={handleSubmit} className="mb-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+      <motion.form onSubmit={handleSubmit} className="mb-8" variants={itemVariants}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <textarea
             value={resume}
             onChange={(e) => setResume(e.target.value)}
-            placeholder="Paste the full resume text here..."
-            className="w-full h-80 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Paste the resume here..."
+            className="w-full h-80 p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"
             required
           />
           <textarea
             value={jobDescription}
             onChange={(e) => setJobDescription(e.target.value)}
-            placeholder="Paste the full job description text here..."
-            className="w-full h-80 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Paste the job description here..."
+            className="w-full h-80 p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow"
             required
           />
         </div>
         
-        {/* --- UPDATED: Button container --- */}
-        <div className="flex items-center gap-4">
-          <button
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <motion.button
             type="submit"
             disabled={isPending}
-            className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-wait"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-wait transition-all transform hover:scale-105"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            {isPending ? 'Generating...' : 'Generate Questions'}
-          </button>
+            {isPending ? (
+              <>
+                <Loader className="animate-spin h-5 w-5"/>
+                Generating...
+              </>
+            ) : (
+              <>
+                <Wand2 className="h-5 w-5"/>
+                Generate Questions
+              </>
+            )}
+          </motion.button>
           
-          {/* --- NEW: The sample button --- */}
-          <button
-            type="button" // Use type="button" to prevent form submission
+          <motion.button
+            type="button"
             onClick={handlePasteSampleData}
-            className="px-6 py-2 bg-gray-200 text-gray-700 font-semibold rounded-md hover:bg-gray-300"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-gray-800 font-semibold rounded-lg shadow-lg hover:bg-gray-200 transition-all transform hover:scale-105"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            📋 Paste Sample
-          </button>
-          {/* --- END NEW --- */}
-          
+            <Clipboard className="h-5 w-5"/>
+            Paste Sample
+          </motion.button>
         </div>
-        {/* --- END UPDATED --- */}
-      </form>
+      </motion.form>
 
-      {/* --- Display Results --- */}
-      {isPending && <div className="text-center text-lg">Thinking... The AI is generating questions.</div>}
+      <AnimatePresence>
+        {isPending && (
+          <motion.div
+            className="text-center text-lg flex justify-center items-center gap-3"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+          >
+             <Loader className="animate-spin h-6 w-6 text-blue-600"/> 
+             <span>The AI is analyzing the documents...</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
       
-      {error && <div className="text-red-500 bg-red-100 p-4 rounded-md">Error: {error.message}</div>}
+      <AnimatePresence>
+        {error && (
+            <motion.div 
+                className="text-red-700 bg-red-100 p-4 rounded-lg shadow-md text-center"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+            >
+                <strong>Error:</strong> {error.message}
+            </motion.div>
+        )}
+      </AnimatePresence>
 
-      {result && (
-        <div className="space-y-4">
-          <h2 className="text-2xl font-bold border-b pb-2">Generated Questions</h2>
-          {result.generatedQuestions.map((q, index) => (
-            <div key={index} className="p-4 border border-gray-200 rounded-lg bg-white shadow-sm">
-              <p className="font-semibold text-gray-800">{q.questionText}</p>
-              <p className="text-sm text-gray-500 mt-2 italic"><strong>Rationale:</strong> {q.rationale}</p>
-              <span className="mt-2 inline-block bg-gray-100 text-gray-700 text-xs font-medium px-2 py-1 rounded-full">{q.category}</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+      <AnimatePresence>
+        {result && (
+          <motion.div 
+            className="space-y-4 mt-10"
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+          >
+            <motion.h2 variants={itemVariants} className="text-3xl font-bold border-b pb-3 mb-6 text-gray-800">
+              Generated Questions
+            </motion.h2>
+            {result.generatedQuestions.map((q, index) => (
+              <motion.div 
+                key={index} 
+                className="p-5 border border-gray-200 rounded-xl bg-white shadow-md hover:shadow-xl transition-shadow"
+                variants={itemVariants}
+              >
+                <p className="font-semibold text-lg text-gray-900">{q.questionText}</p>
+                <p className="text-sm text-gray-500 mt-3 italic">
+                  <strong>Rationale:</strong> {q.rationale}
+                </p>
+                <div className="mt-4">
+                    <span className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full">
+                        {q.category}
+                    </span>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
