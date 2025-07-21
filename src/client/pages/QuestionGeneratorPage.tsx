@@ -106,153 +106,163 @@ export default function QuestionGeneratorPage() {
   };
 
   return (
-    <motion.div 
-      className="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8 font-sans"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-    >
-      <header className="text-center mb-10">
-        <motion.h1 variants={itemVariants} className="text-4xl sm:text-5xl font-bold text-gray-800 mb-2">
-          AI Interview Question Generator
-        </motion.h1>
-        <motion.p variants={itemVariants} className="text-lg text-gray-500">
-          Generate tailored questions from a resume and job description.
-        </motion.p>
-      </header>
-
-      <motion.form onSubmit={handleSubmit} className="mb-8" variants={itemVariants}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <textarea
-            value={resume}
-            onChange={(e) => setResume(e.target.value)}
-            placeholder="Paste the resume here..."
-            className="w-full h-80 p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"
-            required
-          />
-          <textarea
-            value={jobDescription}
-            onChange={(e) => setJobDescription(e.target.value)}
-            placeholder="Paste the job description here..."
-            className="w-full h-80 p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow"
-            required
-          />
+    <div className="bg-slate-50 min-h-screen">
+      <div className="relative isolate px-6 pt-14 lg:px-8">
+        <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
+          <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" style={{clipPath: 'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)'}}></div>
         </div>
-        
-        <div className="flex flex-wrap items-center justify-center gap-4">
-          <motion.button
-            type="submit"
-            disabled={isPending}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-wait transition-all transform hover:scale-105"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            {isPending ? (
-              <>
-                <Loader className="animate-spin h-5 w-5"/>
-                Generating...
-              </>
-            ) : (
-              <>
-                <Wand2 className="h-5 w-5"/>
-                Generate Questions
-              </>
-            )}
-          </motion.button>
-          
-          <motion.button
-            type="button"
-            onClick={handlePasteSampleData}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-gray-800 font-semibold rounded-lg shadow-lg hover:bg-gray-200 transition-all transform hover:scale-105"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Clipboard className="h-5 w-5"/>
-            Paste Sample
-          </motion.button>
-        </div>
-      </motion.form>
+        <motion.div 
+          className="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8 font-sans"
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+        >
+          <header className="text-center mb-10">
+            <motion.h1 variants={itemVariants} className="text-4xl sm:text-5xl font-bold text-gray-800 mb-2">
+              AI Interview Question Generator
+            </motion.h1>
+            <motion.p variants={itemVariants} className="text-lg text-gray-500">
+              Generate tailored questions from a resume and job description.
+            </motion.p>
+          </header>
 
-      <AnimatePresence>
-        {isPending && (
-          <motion.div
-            className="text-center text-lg flex justify-center items-center gap-3"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-          >
-             <Loader className="animate-spin h-6 w-6 text-blue-600"/> 
-             <span>The AI is analyzing the documents...</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      
-      <AnimatePresence>
-        {error && (
-            <motion.div 
-                className="text-red-700 bg-red-100 p-4 rounded-lg shadow-md text-center"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-            >
-                <strong>Error:</strong> {error.message}
-            </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {result && (
-          <motion.div 
-            className="space-y-4 mt-10"
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
-          >
-            <motion.h2 variants={itemVariants} className="text-3xl font-bold border-b pb-3 mb-6 text-gray-800">
-              Generated Questions
-            </motion.h2>
-            {result.generatedQuestions.map((q, index) => (
-              <motion.div 
-                key={index} 
-                className="p-5 border border-gray-200 rounded-xl bg-white shadow-md hover:shadow-xl transition-shadow overflow-hidden"
-                variants={itemVariants}
-                onClick={() => handleQuestionClick(index)}
+          <motion.form onSubmit={handleSubmit} className="mb-8" variants={itemVariants}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <textarea
+                value={resume}
+                onChange={(e) => setResume(e.target.value)}
+                placeholder="Paste the resume here..."
+                className="w-full h-80 p-4 bg-white/50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow backdrop-blur-sm"
+                required
+              />
+              <textarea
+                value={jobDescription}
+                onChange={(e) => setJobDescription(e.target.value)}
+                placeholder="Paste the job description here..."
+                className="w-full h-80 p-4 bg-white/50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow backdrop-blur-sm"
+                required
+              />
+            </div>
+            
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <motion.button
+                type="submit"
+                disabled={isPending}
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-wait transition-all transform hover:scale-105"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <div className="flex justify-between items-center cursor-pointer">
-                    <p className="font-semibold text-lg text-gray-900 pr-4">{q.questionText}</p>
-                    <motion.div animate={{ rotate: selectedQuestionIndex === index ? 180 : 0 }}>
-                        <ChevronDown className="h-6 w-6 text-gray-500"/>
-                    </motion.div>
-                </div>
-                
-                <AnimatePresence>
-                    {selectedQuestionIndex === index && (
-                        <motion.div
-                            initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                            animate={{ opacity: 1, height: 'auto', marginTop: '16px' }}
-                            exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                            transition={{ duration: 0.3 }}
-                        >
-                            <div className="border-t pt-4">
-                                <p className="text-sm text-gray-500 italic">
-                                <strong>Rationale:</strong> {q.rationale}
-                                </p>
-                                <p className="font-semibold text-gray-800 mt-3 mb-1">Expected Answer Elements:</p>
-                                <p className="text-gray-700">{q.expectedAnswer}</p>
-                                <div className="mt-4">
-                                    <span className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full">
-                                        {q.category}
-                                    </span>
-                                </div>
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                {isPending ? (
+                  <>
+                    <Loader className="animate-spin h-5 w-5"/>
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Wand2 className="h-5 w-5"/>
+                    Generate Questions
+                  </>
+                )}
+              </motion.button>
+              
+              <motion.button
+                type="button"
+                onClick={handlePasteSampleData}
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-gray-800 font-semibold rounded-lg shadow-lg hover:bg-gray-200 transition-all transform hover:scale-105"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Clipboard className="h-5 w-5"/>
+                Paste Sample
+              </motion.button>
+            </div>
+          </motion.form>
+
+          <AnimatePresence>
+            {isPending && (
+              <motion.div
+                className="text-center text-lg flex justify-center items-center gap-3"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+              >
+                 <Loader className="animate-spin h-6 w-6 text-blue-600"/> 
+                 <span>The AI is analyzing the documents...</span>
               </motion.div>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
+            )}
+          </AnimatePresence>
+          
+          <AnimatePresence>
+            {error && (
+                <motion.div 
+                    className="text-red-700 bg-red-100 p-4 rounded-lg shadow-md text-center"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                >
+                    <strong>Error:</strong> {error.message}
+                </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {result && (
+              <motion.div 
+                className="space-y-4 mt-10"
+                initial="hidden"
+                animate="visible"
+                variants={containerVariants}
+              >
+                <motion.h2 variants={itemVariants} className="text-3xl font-bold border-b pb-3 mb-6 text-gray-800">
+                  Generated Questions
+                </motion.h2>
+                {result.generatedQuestions.map((q, index) => (
+                  <motion.div 
+                    key={index} 
+                    className="p-5 border border-gray-200 rounded-xl bg-white/70 backdrop-blur-md shadow-md hover:shadow-xl transition-shadow overflow-hidden"
+                    variants={itemVariants}
+                    onClick={() => handleQuestionClick(index)}
+                  >
+                    <div className="flex justify-between items-center cursor-pointer">
+                        <p className="font-semibold text-lg text-gray-900 pr-4">{q.questionText}</p>
+                        <motion.div animate={{ rotate: selectedQuestionIndex === index ? 180 : 0 }}>
+                            <ChevronDown className="h-6 w-6 text-gray-500"/>
+                        </motion.div>
+                    </div>
+                    
+                    <AnimatePresence>
+                        {selectedQuestionIndex === index && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                                animate={{ opacity: 1, height: 'auto', marginTop: '16px' }}
+                                exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <div className="border-t pt-4">
+                                    <p className="text-sm text-gray-500 italic">
+                                    <strong>Rationale:</strong> {q.rationale}
+                                    </p>
+                                    <p className="font-semibold text-gray-800 mt-3 mb-1">Expected Answer Elements:</p>
+                                    <p className="text-gray-700">{q.expectedAnswer}</p>
+                                    <div className="mt-4">
+                                        <span className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full">
+                                            {q.category}
+                                        </span>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+        <div className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]" aria-hidden="true">
+          <div className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]" style={{clipPath: 'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)'}}></div>
+        </div>
+      </div>
+    </div>
   );
 }
