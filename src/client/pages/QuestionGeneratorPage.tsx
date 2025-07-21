@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { modelenceMutation } from '@modelence/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader, Clipboard, Wand2 } from 'lucide-react';
+import { Loader, Clipboard, Wand2, ChevronDown } from 'lucide-react';
 
 // --- Sample Data Constants ---
 const sampleResume = `
@@ -45,13 +45,14 @@ Qualifications
 - Excellent communication and presentation skills.
 `;
 
-// --- Type Definition ---
+// --- Type Definition (Updated) ---
 type GenerationResult = {
   _id: string;
   generatedQuestions: {
     questionText: string;
     category: string;
     rationale: string;
+    expectedAnswer: string; // Added field
   }[];
 };
 
@@ -77,6 +78,7 @@ export default function QuestionGeneratorPage() {
   const [resume, setResume] = useState('');
   const [jobDescription, setJobDescription] = useState('');
   const [result, setResult] = useState<GenerationResult | null>(null);
+  const [selectedQuestionIndex, setSelectedQuestionIndex] = useState<number | null>(null); // State for accordion
 
   const { mutate: generateQuestions, isPending, error } = useMutation({
     ...modelenceMutation('questionGenerator.generate'),
@@ -88,12 +90,19 @@ export default function QuestionGeneratorPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!resume.trim() || !jobDescription.trim()) return;
+    setResult(null); // Clear previous results
+    setSelectedQuestionIndex(null); // Reset accordion
     generateQuestions({ resume, jobDescription });
   };
   
   const handlePasteSampleData = () => {
     setResume(sampleResume);
     setJobDescription(sampleJobDescription);
+  };
+
+  // Handler to toggle the accordion
+  const handleQuestionClick = (index: number) => {
+    setSelectedQuestionIndex(prevIndex => prevIndex === index ? null : index);
   };
 
   return (
@@ -205,18 +214,40 @@ export default function QuestionGeneratorPage() {
             {result.generatedQuestions.map((q, index) => (
               <motion.div 
                 key={index} 
-                className="p-5 border border-gray-200 rounded-xl bg-white shadow-md hover:shadow-xl transition-shadow"
+                className="p-5 border border-gray-200 rounded-xl bg-white shadow-md hover:shadow-xl transition-shadow overflow-hidden"
                 variants={itemVariants}
+                onClick={() => handleQuestionClick(index)}
               >
-                <p className="font-semibold text-lg text-gray-900">{q.questionText}</p>
-                <p className="text-sm text-gray-500 mt-3 italic">
-                  <strong>Rationale:</strong> {q.rationale}
-                </p>
-                <div className="mt-4">
-                    <span className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full">
-                        {q.category}
-                    </span>
+                <div className="flex justify-between items-center cursor-pointer">
+                    <p className="font-semibold text-lg text-gray-900 pr-4">{q.questionText}</p>
+                    <motion.div animate={{ rotate: selectedQuestionIndex === index ? 180 : 0 }}>
+                        <ChevronDown className="h-6 w-6 text-gray-500"/>
+                    </motion.div>
                 </div>
+                
+                <AnimatePresence>
+                    {selectedQuestionIndex === index && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                            animate={{ opacity: 1, height: 'auto', marginTop: '16px' }}
+                            exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            <div className="border-t pt-4">
+                                <p className="text-sm text-gray-500 italic">
+                                <strong>Rationale:</strong> {q.rationale}
+                                </p>
+                                <p className="font-semibold text-gray-800 mt-3 mb-1">Expected Answer Elements:</p>
+                                <p className="text-gray-700">{q.expectedAnswer}</p>
+                                <div className="mt-4">
+                                    <span className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full">
+                                        {q.category}
+                                    </span>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
               </motion.div>
             ))}
           </motion.div>

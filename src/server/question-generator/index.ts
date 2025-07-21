@@ -42,6 +42,8 @@ export default new Module('questionGenerator', {
         - "Behavioral" questions should explore past experiences (e.g., "Tell me about a time...").
         - "Situational" questions should pose a hypothetical problem (e.g., "How would you handle...").
         - "rationale" should explain why this is a good question to ask this specific candidate for this specific role.
+        - "expectedAnswer" should describe the key elements of a strong answer, what to listen for, and what a good response would include (e.g., mentioning the STAR method, specific technologies, or data points).
+
 
         ---
         JOB DESCRIPTION:
@@ -86,6 +88,7 @@ export default new Module('questionGenerator', {
         }
 
       const generatedQuestions = JSON.parse(jsonString);
+      console.log(generatedQuestions);
 
       // 3. Save the entire session to our database
     //   const { insertedId } = await dbQuestionGenerations.insertOne({
