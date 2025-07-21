@@ -24,9 +24,11 @@ This process ensures that every interview is tailored, data-driven, and focused 
 
 ## Screenshots
 
-![Pic1](./images/ai-q-1.png)
+![Pic1](./images/pic1.png)
 
-![Pic2](./images/ai-q-2.png)
+![Pic2](./images/pic2.png)
+
+![Pic3](./images/pic3.png)
 
 ## 🛠️ How we built it
 
